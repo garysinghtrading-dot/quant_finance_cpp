@@ -12,7 +12,7 @@ class Compute_Centroid_Features:
         return window_data 
     
 
-    def compute_euclidiean_distance(self,index, features, current_centroid):
+    def compute_euclidiean_distance(self, last_data, current_centroid, curr_centroid_norm):
         '''
         * Method to compute the Euclidean Distance of two values
         * Gives us a measure of how far is current feature to its centroid feature
@@ -20,10 +20,27 @@ class Compute_Centroid_Features:
             * index -> (int) current index we are looking at
             * features -> (list) a list of the input features to be used
             * current_centroid (numpy array) -> centroid values to take the difference of
+        * OPERATIONS:
+            1. Computes Euclidean Distance of last datapoint to its current centroid
+            2. Standardizes the distance by dividing it by current centroid_norm
         * RETURNS:
             - returns np.linalg.norm() of 
         '''
+        cur_euclidean_dist = np.linalg.norm(last_data - current_centroid)
+        cur_relative_distance = cur_euclidean_dist/curr_centroid_norm
+        return cur_relative_distance
+        
 
+    def compute_relative_manhattan_distance(self, last_data, current_centroid, cur_centroid_norm):
+        man_dist = np.sum(np.abs(last_data - current_centroid))
+        relative_mah_dist = man_dist/cur_centroid_norm
+        return relative_mah_dist
+
+    def compute_signed_deviation(self, last_data, current_centroid, centroid_norm):
+        diff = last_data - current_centroid
+        signed_dev = np.dot(diff, current_centroid) / (centroid_norm**2)
+        return signed_dev 
+    
     def compute_centroid(self, features, window_size):
         '''
             * Method to compute a centroid of data given various inputs
@@ -38,7 +55,7 @@ class Compute_Centroid_Features:
                 - If inputs are not standardized (on same scale) prior to this method
                     - The features with the largest magnitude will dominate the data and results
         '''
-        for i in range(window_size-1, len(self.df)):
+        for i in range(window_size-1, len(self.dataframe)):
             # Split data for appropriate window size
             window_data = self.split_data_frame(i, window_size)# df.iloc[i - window_size: i+1]
             data = window_data[features].values
@@ -56,11 +73,24 @@ class Compute_Centroid_Features:
 
             centroid_norm = np.linalg.norm(current_centroid) # Distance to origin
 
-            self.df.iloc[i, f"centroid_dist_origin_{window_size}"] = centroid_norm
+            self.dataframe.loc[i, f"centroid_dist_origin_{window_size}"] = centroid_norm
             
-            # Compute Euclidean Distance
+            # Relative Distance of Euclidean Distance to Centroid Norm
+            last_data = data[-1]
+            self.dataframe.loc[i, f"relative_euclidean_distance_to_centroid_norm_{window_size}"] = self.compute_euclidiean_distance(last_data, current_centroid, centroid_norm)
+
+            # Relative Manhattan Distance
+            self.dataframe.loc[i, f"relative_manhattan_distance_to_centroid_norm_{window_size}"] = self.compute_relative_manhattan_distance(last_data, current_centroid, centroid_norm)
+
+            # Relative Deviation
+            self.dataframe.loc[i, f"relative_centroid_deviation_{window_size}"] = self.compute_signed_deviation(last_data, current_centroid, centroid_norm)
 
 
+            # Windowed Mean Across All Features
+            self.dataframe.loc[i, f"windowed_mean_{window_size}"] = np.mean(data)
+            self.dataframe.loc[i, f"windowed_std_dev_{window_size}"] = np.std(data)
+
+            
             if i%1000 == 0:
                 print(f"Processed {i} rows")
 
