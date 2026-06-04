@@ -17,14 +17,15 @@ class Compute_Centroid_Features:
         * Method to compute the Euclidean Distance of two values
         * Gives us a measure of how far is current feature to its centroid feature
         * ARGS:
-            * index -> (int) current index we are looking at
-            * features -> (list) a list of the input features to be used
-            * current_centroid (numpy array) -> centroid values to take the difference of
+            * last_data -> (NumPy Array) current index, current values
+            * current_centroid -> (NumPy Array) Row Vector of current centroid
+            * curr_centroid_norm -> (Scaler) Current distance to origin
         * OPERATIONS:
             1. Computes Euclidean Distance of last datapoint to its current centroid
-            2. Standardizes the distance by dividing it by current centroid_norm
+            2. Standardizes the distance by dividing it by current centroid_norm (dist to origin)
         * RETURNS:
-            - returns np.linalg.norm() of 
+            - returns standardized Euclidean Distance
+                - (The Euclidean Distance is standardized, it scales to the data)
         '''
         cur_euclidean_dist = np.linalg.norm(last_data - current_centroid)
         cur_relative_distance = cur_euclidean_dist/curr_centroid_norm
@@ -32,6 +33,20 @@ class Compute_Centroid_Features:
         
 
     def compute_relative_manhattan_distance(self, last_data, current_centroid, cur_centroid_norm):
+        '''
+        * Method to compute the Manhattan Distance of two values
+        * Gives us a measure of how far is current feature to its centroid feature
+        * ARGS:
+            * last_data -> (NumPy Array) current index, current values
+            * current_centroid -> (NumPy Array) Row Vector of current centroid
+            * curr_centroid_norm -> (Scaler) Current distance to origin
+        * OPERATIONS:
+            1. Computes Manhattan Distance of last datapoint to its current centroid
+            2. Standardizes the distance by dividing it by current centroid_norm (dist to origin)
+        * RETURNS:
+            - returns standardized Manhattan Distance
+                - (The Manhattan Distance is standardized, it scales to the data)
+        '''
         man_dist = np.sum(np.abs(last_data - current_centroid))
         relative_mah_dist = man_dist/cur_centroid_norm
         return relative_mah_dist
@@ -41,6 +56,20 @@ class Compute_Centroid_Features:
         signed_dev = np.dot(diff, current_centroid) / (centroid_norm**2)
         return signed_dev 
     
+    def compute_z_scores(self, today_mean_col, window_mean_val, std_dev_val, window_size):
+        '''
+            * Computes a z-score of todays data relative to its window data
+            * ARGS:
+                * today_mean_col -> (float) Mean of todays input vector
+                * window_mean_val -> (float) Mean value of the current window
+                * std_dev_val -> (float) Standard Deviation of the current window
+                * window_size -> (int) Size of the current window
+            * RETURNS:
+                NONE
+                - All operations are stored in the dataframe that is already a class object
+        '''
+      self.dataframe[f'today_z_score_{window_size}'] = (self.dataframe[today_mean_col] - self.dataframe[window_mean_val])/self.dataframe[std_dev_val]
+        
     def compute_centroid(self, features, window_size):
         '''
             * Method to compute a centroid of data given various inputs
