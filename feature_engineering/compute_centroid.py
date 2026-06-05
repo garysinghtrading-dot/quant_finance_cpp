@@ -1,16 +1,15 @@
 import numpy as np
 import pandas as pd 
 
+
 class Compute_Centroid_Features:
     def __init__(self, dataframe):
         self.class_name = "centroid class"
         self.dataframe = dataframe
 
-    
     def split_data_frame(self, current_index, window_size):
-        window_data = self.dataframe.iloc[current_index - window_size: current_index+1]
+        window_data = self.dataframe.iloc[current_index - window_size: current_index + 1]
         return window_data 
-    
 
     def compute_euclidiean_distance(self, last_data, current_centroid, curr_centroid_norm):
         '''
@@ -28,9 +27,8 @@ class Compute_Centroid_Features:
                 - (The Euclidean Distance is standardized, it scales to the data)
         '''
         cur_euclidean_dist = np.linalg.norm(last_data - current_centroid)
-        cur_relative_distance = cur_euclidean_dist/curr_centroid_norm
+        cur_relative_distance = cur_euclidean_dist / curr_centroid_norm
         return cur_relative_distance
-        
 
     def compute_relative_manhattan_distance(self, last_data, current_centroid, cur_centroid_norm):
         '''
@@ -48,45 +46,48 @@ class Compute_Centroid_Features:
                 - (The Manhattan Distance is standardized, it scales to the data)
         '''
         man_dist = np.sum(np.abs(last_data - current_centroid))
-        relative_mah_dist = man_dist/cur_centroid_norm
+        relative_mah_dist = man_dist / cur_centroid_norm
         return relative_mah_dist
 
     def compute_signed_deviation(self, last_data, current_centroid, centroid_norm):
         diff = last_data - current_centroid
-        signed_dev = np.dot(diff, current_centroid) / (centroid_norm**2)
+        signed_dev = np.dot(diff, current_centroid) / (centroid_norm ** 2)
         return signed_dev 
     
     def compute_z_scores(self, today_mean_col, window_mean_val, std_dev_val, window_size):
         '''
-            * Computes a z-score of todays data relative to its window data
-            * ARGS:
-                * today_mean_col -> (float) Mean of todays input vector
-                * window_mean_val -> (float) Mean value of the current window
-                * std_dev_val -> (float) Standard Deviation of the current window
-                * window_size -> (int) Size of the current window
-            * RETURNS:
-                NONE
-                - All operations are stored in the dataframe that is already a class object
+        * Computes a z-score of todays data relative to its window data
+        * ARGS:
+            * today_mean_col -> (float) Mean of todays input vector
+            * window_mean_val -> (float) Mean value of the current window
+            * std_dev_val -> (float) Standard Deviation of the current window
+            * window_size -> (int) Size of the current window
+        * RETURNS:
+            NONE
+            - All operations are stored in the dataframe that is already a class object
         '''
-      self.dataframe[f'today_z_score_{window_size}'] = (self.dataframe[today_mean_col] - self.dataframe[window_mean_val])/self.dataframe[std_dev_val]
+        self.dataframe[f'today_z_score_{window_size}'] = (
+            (self.dataframe[today_mean_col] - self.dataframe[window_mean_val]) 
+            / self.dataframe[std_dev_val]
+        )
         
     def compute_centroid(self, features, window_size):
         '''
-            * Method to compute a centroid of data given various inputs
-            * This method assumes input features do not need scaling
-            * ARGS:
-                * df -> (pd.dataframe) Pandas dataframe that contains the data
-                * features -> (list) input features (feature names) as a list
-                * window_size -> (int)
-            * RETURNS:
-                NONE -> the results are stored in a dataframe that is a class object 
-            * WARNING:
-                - If inputs are not standardized (on same scale) prior to this method
-                    - The features with the largest magnitude will dominate the data and results
+        * Method to compute a centroid of data given various inputs
+        * This method assumes input features do not need scaling
+        * ARGS:
+            * df -> (pd.dataframe) Pandas dataframe that contains the data
+            * features -> (list) input features (feature names) as a list
+            * window_size -> (int)
+        * RETURNS:
+            NONE -> the results are stored in a dataframe that is a class object 
+        * WARNING:
+            - If inputs are not standardized (on same scale) prior to this method
+                - The features with the largest magnitude will dominate the data and results
         '''
-        for i in range(window_size-1, len(self.dataframe)):
+        for i in range(window_size - 1, len(self.dataframe)):
             # Split data for appropriate window size
-            window_data = self.split_data_frame(i, window_size)# df.iloc[i - window_size: i+1]
+            window_data = self.split_data_frame(i, window_size)
             data = window_data[features].values
 
             if data.size == 0 or np.all(np.isnan(data)):
@@ -94,33 +95,36 @@ class Compute_Centroid_Features:
                 continue
 
             # Compute Centroid
-            current_centroid = np.mean(data, axis=0) # Mean of all datapoints per column in the window size (axis=0 means per column)
+            current_centroid = np.mean(data, axis=0) 
 
-            # If the centroid itself is all NaNs after nanmean (e.g., if all values in a feature column were NaN in the window)
+            # If the centroid itself is all NaNs after mean
             if np.all(np.isnan(current_centroid)):
                 continue
 
             centroid_norm = np.linalg.norm(current_centroid) # Distance to origin
-
             self.dataframe.loc[i, f"centroid_dist_origin_{window_size}"] = centroid_norm
             
             # Relative Distance of Euclidean Distance to Centroid Norm
             last_data = data[-1]
-            self.dataframe.loc[i, f"relative_euclidean_distance_to_centroid_norm_{window_size}"] = self.compute_euclidiean_distance(last_data, current_centroid, centroid_norm)
+            self.dataframe.loc[i, f"relative_euclidean_distance_to_centroid_norm_{window_size}"] = (
+                self.compute_euclidiean_distance(last_data, current_centroid, centroid_norm)
+            )
 
             # Relative Manhattan Distance
-            self.dataframe.loc[i, f"relative_manhattan_distance_to_centroid_norm_{window_size}"] = self.compute_relative_manhattan_distance(last_data, current_centroid, centroid_norm)
+            self.dataframe.loc[i, f"relative_manhattan_distance_to_centroid_norm_{window_size}"] = (
+                self.compute_relative_manhattan_distance(last_data, current_centroid, centroid_norm)
+            )
 
             # Relative Deviation
-            self.dataframe.loc[i, f"relative_centroid_deviation_{window_size}"] = self.compute_signed_deviation(last_data, current_centroid, centroid_norm)
-
+            self.dataframe.loc[i, f"relative_centroid_deviation_{window_size}"] = (
+                self.compute_signed_deviation(last_data, current_centroid, centroid_norm)
+            )
 
             # Windowed Mean Across All Features
             self.dataframe.loc[i, f"windowed_mean_{window_size}"] = np.mean(data)
             self.dataframe.loc[i, f"windowed_std_dev_{window_size}"] = np.std(data)
-
             
-            if i%1000 == 0:
+            if i % 1000 == 0:
                 print(f"Processed {i} rows")
 
         print(f"Done with {window_size}")
