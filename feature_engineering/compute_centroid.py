@@ -1,7 +1,6 @@
 import numpy as np
 import pandas as pd 
 
-
 class Compute_Centroid_Features:
     def __init__(self, dataframe):
         self.class_name = "centroid class"
@@ -71,6 +70,31 @@ class Compute_Centroid_Features:
             / self.dataframe[std_dev_val]
         )
         
+    def compute_mahalanobis_distance(
+        self,
+        last_data,
+        current_centroid,
+        covariance_matrix
+    ):
+        """
+        Mahalanobis distance of today's point
+        relative to the current centroid.
+        """
+
+        diff = last_data - current_centroid
+
+        try:
+            inv_cov = np.linalg.pinv(covariance_matrix)
+
+            mahal_sq = diff.T @ inv_cov @ diff
+
+            mahal_dist = np.sqrt(max(mahal_sq, 0))
+
+            return mahal_dist
+
+        except Exception:
+            return np.nan
+    
     def compute_centroid(self, features, window_size):
         '''
         * Method to compute a centroid of data given various inputs
@@ -118,6 +142,23 @@ class Compute_Centroid_Features:
             # Relative Deviation
             self.dataframe.loc[i, f"relative_centroid_deviation_{window_size}"] = (
                 self.compute_signed_deviation(last_data, current_centroid, centroid_norm)
+            )
+
+            # Mahalanobis Distance
+            covariance_matrix = np.cov(
+                data[:-1],
+                rowvar=False
+            )
+
+            self.dataframe.loc[
+                i,
+                f"mahalanobis_distance_to_centroid_{window_size}"
+            ] = (
+                self.compute_mahalanobis_distance(
+                    last_data,
+                    current_centroid,
+                    covariance_matrix
+                )
             )
 
             # Windowed Mean Across All Features
