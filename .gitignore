@@ -1,0 +1,8 @@
+# Ignore the object folder
+obj/
+
+# Ignore the final executable
+quant_program
+
+# Ignore any hidden system files (optional)
+.DS_Store
