@@ -1,52 +1,60 @@
 #include "csv_loader.h"
-#include <fstream>
-#include <sstream>
-#include <iostream>
 
-bool DataFrame::load_csv(const std::string& filename) {
-    std::ifstream file(filename);
+AnalyzerSecurity::AnalyzerSecurity(){
+}
+
+void AnalyzerSecurity::readFile(string filepath) {
+    std::ifstream file(filepath);
+
     if (!file.is_open()) {
-        std::cerr << "Error: Could not open file " << filename << "\n";
-        return false;
+        std::cerr << "Could not open file: " << filepath << std::endl;
+        return;
     }
 
     std::string line;
+    // Skip header if there is one
+    std::getline(file, line); 
 
-    // --- Read header ---
-    if (!std::getline(file, line)) {
-        std::cerr << "Error: Empty CSV file\n";
-        return false;
-    }
-
-    std::stringstream header_stream(line);
-    std::string col_name;
-    std::vector<std::string> col_names;
-
-    while (std::getline(header_stream, col_name, ',')) {
-        col_names.push_back(col_name);
-        table_[col_name] = {};
-    }
-
-    // --- Read rows ---
     while (std::getline(file, line)) {
-        std::stringstream row_stream(line);
+        std::stringstream ss(line);
         std::string cell;
-        size_t i = 0;
-
-        while (std::getline(row_stream, cell, ',')) {
-            table_[col_names[i]].push_back(std::stod(cell));
-            i++;
-        }
+        
+        // Create a new StoreData object on the heap
+        StoreData* newRow = new StoreData();
+        
+        // Read 4 columns separated by commas
+        std::getline(ss, cell, ','); newRow->col0 = std::stof(cell); 
+        std::getline(ss, cell, ','); newRow->col1 = std::stof(cell);
+        std::getline(ss, cell, ','); newRow->col2 = std::stof(cell);
+        std::getline(ss, cell, ','); newRow->col3 = std::stof(cell);
+        std::getline(ss, cell, ','); newRow->col4 = std::stof(cell);
+        
+        // Add to our vector
+        sd.push_back(newRow);
     }
-
-    return true;
+    file.close();
 }
 
-std::vector<std::string> DataFrame::columns() const {
-    std::vector<std::string> names;
-    names.reserve(table_.size());
-    for (const auto& kv : table_) {
-        names.push_back(kv.first);
-    }
-    return names;
+void AnalyzerSecurity::printValue(size_t index, string column){
+  // Check if index is within bounds to avoid a crash
+  if (index >= sd.size()) {
+    std::cout << "Index out of bounds!" << std::endl;
+    return;
+  }
+
+  if (column == "col1") {
+    std::cout << sd[index]->col1 << std::endl;
+  } else if (column == "col2") {
+      std::cout << sd[index]->col2 << std::endl;
+  } else if (column == "col3") {
+    std::cout << sd[index]->col3 << std::endl;
+  } else if (column == "col4") {
+      std::cout << sd[index]->col4 << std::endl;
+  } else {
+      std::cout << "Invalid column name." << std::endl;
+  }
+}
+
+AnalyzerSecurity::~AnalyzerSecurity() {
+    //delete sd; // Clean up the memory here
 }
