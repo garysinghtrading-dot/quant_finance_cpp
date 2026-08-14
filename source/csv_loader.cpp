@@ -15,44 +15,50 @@ void AnalyzerSecurity::readFile(string filepath) {
     // Skip header if there is one
     std::getline(file, line); 
 
+    //int rowIndex = 0; // Track row number for the training offset
     while (std::getline(file, line)) {
-        std::stringstream ss(line);
-        std::string cell;
-        
-        // Create a new StoreData object on the heap
-        StoreData* newRow = new StoreData();
-        
-        // Read 4 columns separated by commas
-        std::getline(ss, cell, ','); newRow->col0 = std::stof(cell); 
-        std::getline(ss, cell, ','); newRow->col1 = std::stof(cell);
-        std::getline(ss, cell, ','); newRow->col2 = std::stof(cell);
-        std::getline(ss, cell, ','); newRow->col3 = std::stof(cell);
-        std::getline(ss, cell, ','); newRow->col4 = std::stof(cell);
-        
-        // Add to our vector
-        sd.push_back(newRow);
+      std::stringstream ss(line);
+      std::string cell;
+      vector<float> rowdata;
+            
+      while (std::getline(ss, cell, ',')) {
+          // Strip trailing carriage return if present (fixes Windows line-ending issues)
+          if (!cell.empty() && cell.back() == '\r') {
+              cell.pop_back();
+          }
+
+          if (cell.empty() || cell == "nan" || cell == "NaN") {
+              rowdata.push_back(0.0f); 
+          } else {
+              try {
+                  rowdata.push_back(std::stof(cell));
+              } catch (const std::exception& e) {
+                  std::cerr << "Error parsing cell value: '" << cell << "' -> " << e.what() << std::endl;
+                  rowdata.push_back(0.0f); // Fallback safely
+              }
+          }
+      }
+          AllData.push_back(rowdata);
+        //rowIndex++;
     }
     file.close();
 }
 
 void AnalyzerSecurity::printValue(size_t index, string column){
   // Check if index is within bounds to avoid a crash
-  if (index >= sd.size()) {
+  int col_index = 0;
+  for(int i=0; i<colNames.size(); i++){
+    if(colNames[i] == column){
+      col_index=i;
+    }
+  }
+
+  if (index >= AllData.size()) {
     std::cout << "Index out of bounds!" << std::endl;
     return;
   }
 
-  if (column == "col1") {
-    std::cout << sd[index]->col1 << std::endl;
-  } else if (column == "col2") {
-      std::cout << sd[index]->col2 << std::endl;
-  } else if (column == "col3") {
-    std::cout << sd[index]->col3 << std::endl;
-  } else if (column == "col4") {
-      std::cout << sd[index]->col4 << std::endl;
-  } else {
-      std::cout << "Invalid column name." << std::endl;
-  }
+  cout << AllData[index][col_index] << " " << endl;
 }
 
 AnalyzerSecurity::~AnalyzerSecurity() {
