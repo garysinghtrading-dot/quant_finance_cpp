@@ -61,6 +61,10 @@ void AnalyzerSecurity::printValue(size_t index, string column){
   cout << AllData[index][col_index] << " " << endl;
 }
 
+vector<vector<float>> AnalyzerSecurity::GetAllData(){
+  return AllData; wx+b
+}
+
 AnalyzerSecurity::~AnalyzerSecurity() {
     //delete sd; // Clean up the memory here
 }
