@@ -17,9 +17,8 @@ int main(int argc, char* argv[]) {
   cout << "Relative Path: " << csvPath << endl;
   AnalyzerSecurity analyzer;
   analyzer.readFile(csvPath);
-  analyzer.printValue(0, "col4");
-
-
+  analyzer.printValue(0, "Temporal_Velocity_Alpha");
+  analyzer.printValue(100, "Target");
 
   return 0;
 }
