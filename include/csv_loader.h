@@ -9,9 +9,6 @@
 
 using namespace std;
 
-
-
-
 class AnalyzerSecurity{
   private: 
     /*
@@ -35,6 +32,7 @@ class AnalyzerSecurity{
     AnalyzerSecurity();
     void readFile(string filepath);
     void printValue(size_t index, string column);
+    vector<vector<float>> GetAllData();
     ~AnalyzerSecurity();
 };
 #endif
