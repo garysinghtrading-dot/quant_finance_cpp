@@ -1,9 +1,13 @@
 # Anomaly Detection
-## When security prices exhibit large magnitude moves in either up or down direction, typically we can expect a reversion to the mean
-## We can use Machine Learning to identify areas where price has fallen too far above or below, and we can start to expect some kind of reversal in trend.
 
-## Anomaly Detection was done using Python 3.14.2 
-### See requirements.txt for installation inside the anomaly_detection directory
+When security prices exhibit large-magnitude price moves in either direction, we typically expect a reversion to the mean. 
+
+We can leverage machine learning algorithms to identify extreme market regimes—where prices have deviated too far above or below historical norms—and signal an impending trend reversal.
+
+## Environment & Setup
+
+* **Python Version:** 3.14.2
+* **Dependencies:** See `requirements.txt` inside the `anomaly_detection/` directory for installation instructions.
 
 # DecisionTree Using C++
 
