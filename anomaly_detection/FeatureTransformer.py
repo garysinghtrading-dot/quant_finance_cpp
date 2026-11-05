@@ -34,18 +34,11 @@ class FeatureTransformer:
         and transforms the entire feature set to avoid data leakage.
         Returns scaled DataFrame and fitted scaler.
         """
-        scaled_df = self.df.copy()
         scaler = StandardScaler()
-        
+
         # Determine fit slice bounds
         fit_data = self.df[feature_cols].iloc[start_idx:end_idx]
-        scaler.fit(fit_data)
-        
-        # Transform full dataset using the fitted parameters
-        scaled_values = scaler.transform(self.df[feature_cols])
-        scaled_cols = [f"{col}_scaled" for col in feature_cols]
-        
-        for idx, col_name in enumerate(scaled_cols):
-            scaled_df[col_name] = scaled_values[:, idx]
-            
-        return scaled_df, scaler
+        X_train_scaled = scaler.fit_transform(fit_data)
+
+        return X_train_scaled, scaler 
+
