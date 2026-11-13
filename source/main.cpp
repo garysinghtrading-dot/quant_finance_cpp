@@ -1,5 +1,6 @@
 #include "csv_loader.h"
 #include <iostream>
+#include<vector>
 using namespace std; 
 
 int main(int argc, char* argv[]) {
@@ -17,8 +18,12 @@ int main(int argc, char* argv[]) {
   cout << "Relative Path: " << csvPath << endl;
   AnalyzerSecurity analyzer;
   analyzer.readFile(csvPath);
-  analyzer.printValue(0, "Temporal_Velocity_Alpha");
-  analyzer.printValue(100, "Target");
+  
+  int _idx = 0;
+  vector<string> features = {"Open", "High", "Low", "Close"};
+  for(size_t i=0; i<features.size(); i++){
+    analyzer.printValue(_idx, features[i]);
+  }
 
   return 0;
 }
