@@ -11,6 +11,7 @@ class FeatureEngineering {
   public:
     FeatureEngineering(); // Default Constructor 
     std::vector<double> ComputeSMA(const std::vector<double>& data, int period);
+    static double PercentDifference(double val1, double val2);
 }; 
 
 #endif

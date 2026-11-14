@@ -165,6 +165,24 @@ void AnalyzerSecurity::AddSma(FeatureEngineering Fe){
   }
 }
 
+// Compute Percent Differences
+void AnalyzerSecurity::ComputePctDiff(string col1, string col2, FeatureEngineering Fe){
+  int col1_idx = get_index(col1);
+  int col2_idx = get_index(col2);
+  if(col1_idx == -1 || col2_idx == -1){
+    std::cerr << "One of the columns does not exist, can't proceed with the operation" << std::endl;
+    return;
+  }
+
+  // Insert new feature name to the Dictionary
+  std::string feature_name = col1 + '_' + col2 + "pct_diff";
+  AddFeature(feature_name); // Inserted new column name to dictionary
+
+  for(size_t i=0; i<AllData.size(); i++){
+    double pct = Fe.PercentDifference(AllData[i][col1_idx], AllData[i][col2_idx]);
+    AllData[i].push_back(pct); // Insert new value
+  }
+}
 
 vector<vector<double>> AnalyzerSecurity::GetAllData(){
   return AllData; //wx+b

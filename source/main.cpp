@@ -34,9 +34,12 @@ int main(int argc, char* argv[]) {
   FeatureEngineering Fe; // Class object of Feature Engineering Class
   analyzer.AddSma(Fe);
 
-  cout << "SMA 10: ";
-  analyzer.printValue(9, "SMA_10");
+  vector<string> MAs = {"SMA_10", "SMA_20", "SMA_50"};
+  string feature_ = "Close";
 
+  for(size_t i=0; i<MAs.size(); i++){
+    analyzer.ComputePctDiff(feature_, MAs[i], Fe);
+  }
 
   return 0;
 }

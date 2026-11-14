@@ -30,6 +30,7 @@ class AnalyzerSecurity{
     vector<vector<double>> GetAllData();
     int get_index(string col_name);
     void AddSma(FeatureEngineering Fe);
+    void ComputePctDiff(string col1, string col2, FeatureEngineering Fe);
     ~AnalyzerSecurity();
 };
 #endif

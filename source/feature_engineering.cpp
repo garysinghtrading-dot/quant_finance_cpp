@@ -27,3 +27,8 @@ std::vector<double> FeatureEngineering::ComputeSMA(const std::vector<double>& da
 
   return smaValues;
 }
+
+double FeatureEngineering::PercentDifference(double val1, double val2){ 
+  if(val2 == 0.0) return val2; // just return 0, we don't have enough data to compute this value
+  return (val1 - val2)/val2;
+}
