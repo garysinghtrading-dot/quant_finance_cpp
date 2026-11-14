@@ -7,6 +7,7 @@
 #include<sstream>
 #include<string>
 #include<unordered_map>
+#include "feature_engineering.h"
 
 using namespace std;
 
@@ -24,7 +25,11 @@ class AnalyzerSecurity{
     AnalyzerSecurity();
     void readFile(string filepath);
     void printValue(size_t index, string column);
+    void AddFeature(string name);
+    void AddVector(vector<double> new_data);
     vector<vector<double>> GetAllData();
+    int get_index(string col_name);
+    void AddSma(FeatureEngineering Fe);
     ~AnalyzerSecurity();
 };
 #endif

@@ -1,4 +1,5 @@
 #include "csv_loader.h"
+#include "feature_engineering.h"
 #include <iostream>
 #include<vector>
 using namespace std; 
@@ -24,6 +25,18 @@ int main(int argc, char* argv[]) {
   for(size_t i=0; i<features.size(); i++){
     analyzer.printValue(_idx, features[i]);
   }
+
+  /*
+  Feature Engineering
+    1. Add SMA's
+  */
+  FeatureEngineering Fe; // Class object of Feature Engineering Class
+
+  /*
+
+
+  */
+
 
   return 0;
 }

@@ -9,8 +9,8 @@ INC_DIR = include
 
 # Files
 TARGET = quant_program
-SRCS = $(SRC_DIR)/main.cpp $(SRC_DIR)/csv_loader.cpp
-OBJS = $(OBJ_DIR)/main.o $(OBJ_DIR)/csv_loader.o
+SRCS = $(SRC_DIR)/main.cpp $(SRC_DIR)/csv_loader.cpp $(SRC_DIR)/feature_engineering.cpp
+OBJS = $(OBJ_DIR)/main.o $(OBJ_DIR)/csv_loader.o $(OBJ_DIR)/feature_engineering.o
 
 # Build rules
 all: $(TARGET)

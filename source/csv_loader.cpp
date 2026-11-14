@@ -106,6 +106,66 @@ void AnalyzerSecurity::printValue(size_t index, string column){
   cout << AllData[index][col_index] << " " << endl;
 }
 
+// AddFeature to HashMap
+void AnalyzerSecurity::AddFeature(string name){
+  colNameIndex[name]=static_cast<int>(AllData[0].size());
+}
+
+// Add new datarow
+void AnalyzerSecurity::AddVector(vector<double> new_data){
+  for (size_t i = 0; i < AllData.size(); ++i) {
+    AllData[i].push_back(new_data[i]);
+  }
+}
+
+// get Index of a column
+int AnalyzerSecurity::get_index(string col_name){
+  auto it = colNameIndex.find(col_name);
+
+  if(it == colNameIndex.end()){
+    std::cerr << "Column does not exist" << std::endl;
+    return -1;
+  }
+  return it->second; 
+}
+
+// Feature Engineer Moving Averages
+void AnalyzerSecurity::AddSma(FeatureEngineering Fe){
+  std::string ma_feature = "Close";
+
+  // 1. Get the column index for "Close"
+  int col_idx = get_index(ma_feature);
+
+  if(col_idx == -1){
+    cerr << "Can not find column name" << endl;
+    return; // exit
+  }
+
+  // 2. Extract the column values vertically since AllData is row-major
+  std::vector<double> close_prices;
+  close_prices.reserve(AllData.size());
+  for (const auto& row : AllData) {
+    close_prices.push_back(row[col_idx]);
+  }
+
+  // Loop through your periods and compute/add them
+  std::vector<int> periods = {10, 20, 50};
+  for (size_t i = 0; i < periods.size(); ++i) {
+    // Compute SMA vector
+    std::vector<double> new_data = Fe.ComputeSMA(close_prices, periods[i]);
+    
+    // Build the string name safely using std::to_string
+    std::string feature_name = "SMA_" + std::to_string(periods[i]);
+    
+    // Add it to your analyzer (assuming your method takes name and data)
+    AddFeature(feature_name);
+
+    // append the new SMA value
+    AddVector(new_data);
+  }
+}
+
+
 vector<vector<double>> AnalyzerSecurity::GetAllData(){
   return AllData; //wx+b
 }

@@ -1,9 +1,16 @@
-#include<vector>
+#ifndef FEATURE_ENGINEERING_H
+#define FEATURE_ENGINEERING_H
 
-class FeatureEngineering{
+#include<iostream>
+#include <vector>
+
+class FeatureEngineering {
   private:
-    int val = 0; // place holder
+    int val = 0; // placeholder
 
   public:
-    FeatureEngineering(); // Defo Constructor 
-}
+    FeatureEngineering(); // Default Constructor 
+    std::vector<double> ComputeSMA(const std::vector<double>& data, int period);
+}; 
+
+#endif
