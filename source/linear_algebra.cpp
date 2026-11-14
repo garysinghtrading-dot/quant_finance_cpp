@@ -55,3 +55,20 @@ double LinearAlgebra::ScalarProjection(const std::vector<double>& X1, const std:
   return scaler_projection;
 
 }
+
+double LinearAlgebra::CosineSimilarity(const std::vector<double>& X1, const std::vector<double>& X2){
+  if(X1.empty() || X2.empty() || X1.size() != X2.size()){
+    throw std::invalid_argument("Vectors must be of equal size and not be empty");
+  }
+  
+  double magnitude1 = LinearAlgebra::Magnitude(X1);
+  double magnitude2 = LinearAlgebra::Magnitude(X2);
+  double dot_prod = LinearAlgebra::DotProduct(X1, X2);
+
+  if(magnitude1 == 0.0f || magnitude2 == 0.0f)
+    throw std::runtime_error("Can not do division by 0");
+
+  double cosine_sim = dot_prod/(magnitude1 * magnitude2);
+  return cosine_sim;
+
+}

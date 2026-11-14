@@ -17,6 +17,9 @@ int main(int argc, char* argv[]) {
   std::string csvPath = argv[1];
   csvPath = "data/" + csvPath + ".csv"; 
 
+  vector<double> X1 = {1.0, 0.0};
+  vector<double> X2 = {0.0, 1.0};
+
   cout << "Relative Path: " << csvPath << endl;
   AnalyzerSecurity analyzer;
   analyzer.readFile(csvPath);
