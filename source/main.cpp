@@ -1,5 +1,6 @@
 #include "csv_loader.h"
 #include "feature_engineering.h"
+#include "linear_algebra.h"
 #include <iostream>
 #include<vector>
 using namespace std; 
@@ -31,11 +32,10 @@ int main(int argc, char* argv[]) {
     1. Add SMA's
   */
   FeatureEngineering Fe; // Class object of Feature Engineering Class
+  analyzer.AddSma(Fe);
 
-  /*
-
-
-  */
+  cout << "SMA 10: ";
+  analyzer.printValue(9, "SMA_10");
 
 
   return 0;
